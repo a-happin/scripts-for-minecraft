@@ -1,3 +1,5 @@
+// 参考: https://developer.valvesoftware.com/wiki/Source_RCON_Protocol
+
 export const PacketType = {
   SERVERDATA_AUTH: 3,
   SERVERDATA_AUTH_RESPONSE: 2,
