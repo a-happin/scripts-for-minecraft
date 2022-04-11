@@ -1,35 +1,4 @@
-type VersionManifest = {
-  latest: {
-    release: string
-    snapshot: string
-  }
-  versions: readonly {
-    id: string
-    type: string
-    url: string
-    time: string
-    releaseTime: string
-  }[]
-}
-
-const exists = async (filePath: string): Promise <boolean> => {
-  try
-  {
-    await Deno.lstat (filePath)
-    return true
-  }
-  catch (error)
-  {
-    if (error instanceof Deno.errors.NotFound)
-    {
-      return false
-    }
-    else
-    {
-      throw error
-    }
-  }
-}
+import {VersionManifest, exists, fetchJSON, download} from './util.ts'
 
 if (Deno.args.length === 0)
 {
@@ -46,7 +15,7 @@ versions:
 }
 else
 {
-  const version_manifest = await fetch ('https://launchermeta.mojang.com/mc/game/version_manifest.json').then ((response) => response.json ()) as VersionManifest
+  const version_manifest = await fetchJSON ('https://launchermeta.mojang.com/mc/game/version_manifest.json') as VersionManifest
 
   const targets = new Set ()
   for (const arg of Deno.args)
@@ -79,10 +48,9 @@ else
       else
       {
         tasks.push (async () => {
-          const version = await fetch (target_version.url).then ((response) => response.json ())
+          const version = await fetchJSON (target_version.url)
           console.log (`Downloading ${filePath} ...`)
-          const binary = await fetch (version.downloads.server.url).then ((response) => response.arrayBuffer ()).then ((arrayBuffer) => new Uint8Array (arrayBuffer))
-          await Deno.writeFile (filePath, binary)
+          await download (version.downloads.server.url, filePath)
           console.log (`Downloaded ${filePath}`)
         })
       }
@@ -90,6 +58,7 @@ else
     else
     {
       console.error (`${target} is not a valid version`)
+      Deno.exit (1)
     }
   }
 
