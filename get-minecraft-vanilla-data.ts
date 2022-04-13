@@ -84,5 +84,5 @@ else
     }
   }
 
-  Promise.all (tasks.map ((task) => task ()))
+  await Promise.all (tasks.map ((task) => task ()))
 }
