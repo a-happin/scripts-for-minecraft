@@ -102,7 +102,7 @@ else
             for (const [key, value] of Object.entries (registries))
             {
               const resource = ResourceLocation.fromString (key)
-              await writeJSONFile (`${dirPath}/processed/reports/${resource.path}.json`, {values: Object.keys (value.entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()})
+              await writeJSONFile (`${dirPath}/processed/reports/registries/${resource.path}.json`, {values: Object.keys (value.entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()})
             }
             console.log (`Processed Registory Data`)
 
