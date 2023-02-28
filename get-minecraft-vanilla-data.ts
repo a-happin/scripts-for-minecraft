@@ -1,4 +1,4 @@
-import {VersionManifest, exists, fetchJSON, download} from './util.ts'
+import {VersionManifest, exists, fetchJSON, download, ResourceLocation, readJSONFile, writeJSONFile} from './util.ts'
 
 if (Deno.args.length === 0)
 {
@@ -96,6 +96,15 @@ else
               cwd: dirPath
             }).status ()
             console.log (`Generated Registory Data`)
+
+            console.log (`Processing Registory Data ...`)
+            const registries = await readJSONFile (`${dirPath}/generated/reports/registries.json`) as { [k: string]: {entries: {[k: string]: any}} }
+            for (const [key, value] of Object.entries (registries))
+            {
+              const resource = ResourceLocation.fromString (key)
+              await writeJSONFile (`${dirPath}/processed/reports/${resource.path}.json`, {values: Object.keys (value.entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()})
+            }
+            console.log (`Processed Registory Data`)
 
             console.log (`Removing ${serverPath} ...`)
             await Promise.all ([
