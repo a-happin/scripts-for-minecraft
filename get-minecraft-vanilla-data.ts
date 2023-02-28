@@ -68,7 +68,7 @@ else
           console.log (`Downloading ${langFilePath} ...`)
           const assetIndex = await fetchJSON (version.assetIndex.url)
           const hash = assetIndex.objects[`minecraft/lang/${lang}.json`].hash
-          const lang_json = await fetchJSON (`http://resources.download.minecraft.net/${hash.slice (0, 2)}/${hash}`)
+          const lang_json = await fetchJSON (`https://resources.download.minecraft.net/${hash.slice (0, 2)}/${hash}`)
           await Deno.writeTextFile (langFilePath, JSON.stringify (lang_json, undefined, 2))
           console.log (`Downloaded ${langFilePath}`)
 
