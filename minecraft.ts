@@ -1015,7 +1015,7 @@ export async function * readResources (path_of_datapack: string, category: Resou
     if (path.endsWith (ResourceCategory[category].suffix))
     {
       const relative = stdpath.relative (root, path)
-      const entryLocation = new ResourceLocation (location.namespace, relative)
+      const entryLocation = new ResourceLocation (location.namespace, relative.slice (0, - ResourceCategory[category].suffix.length))
       yield {path, location: entryLocation, data: await readResource (path_of_datapack, category, entryLocation)}
     }
   }
