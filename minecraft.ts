@@ -1,4 +1,4 @@
-import * as stdpath from 'https://deno.land/std@0.178.0/path/mod.ts'
+import * as stdpath from 'https://deno.land/std@0.182.0/path/mod.ts'
 
 export type VersionManifest = {
   latest: {
@@ -28,39 +28,6 @@ export const fetchVersionManifest = (): Promise <VersionManifest> => fetch ('htt
 //   }
 //   return res
 // })
-
-export class ResourceLocation
-{
-  constructor (
-    public readonly namespace: string,
-    public readonly path: string
-  )
-  {
-  }
-
-  static fromString (str: string)
-  {
-    if (str.includes (':'))
-    {
-      const [namespace, path] = str.split (':')
-      return new ResourceLocation (namespace || 'minecraft', path)
-    }
-    else
-    {
-      return new ResourceLocation ('minecraft', str)
-    }
-  }
-
-  toFullString ()
-  {
-    return `${this.namespace}:${this.path}`
-  }
-
-  toString ()
-  {
-    return this.namespace === 'minecraft' ? (this.path || ':') : this.toFullString ()
-  }
-}
 
 export const ResourceCategory = {
   "advancements": {
@@ -135,6 +102,39 @@ export const ResourceCategory = {
   },
 } as const
 export type ResourceCategory = keyof typeof ResourceCategory
+
+export class ResourceLocation
+{
+  constructor (
+    public readonly namespace: string,
+    public readonly path: string
+  )
+  {
+  }
+
+  static fromString (str: string)
+  {
+    if (str.includes (':'))
+    {
+      const [namespace, path] = str.split (':')
+      return new ResourceLocation (namespace || 'minecraft', path)
+    }
+    else
+    {
+      return new ResourceLocation ('minecraft', str)
+    }
+  }
+
+  toFullString ()
+  {
+    return `${this.namespace}:${this.path}`
+  }
+
+  toString ()
+  {
+    return this.namespace === 'minecraft' ? (this.path || ':') : this.toFullString ()
+  }
+}
 
 export const path_of_resource = (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) => {
   if (typeof location === 'string')
@@ -984,6 +984,40 @@ export const readResource: {
   else if (ResourceCategory[category].suffix === '.nbt')
   {
     return await Deno.readFile (path)
+  }
+}
+
+async function * enumurate_files (dir: string | URL): AsyncIterableIterator <string>
+{
+  for await (const entry of Deno.readDir (dir))
+  {
+    const path = stdpath.join (dir, entry.name)
+    if (entry.isFile)
+    {
+      yield path
+    }
+    else if (entry.isDirectory)
+    {
+      yield * enumurate_files (path)
+    }
+  }
+}
+
+export async function * readResources (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) {
+  if (typeof location === 'string')
+  {
+    location = ResourceLocation.fromString (location)
+  }
+  const dir = stdpath.dirname (path_of_resource (path_of_datapack, category, location))
+  const root = stdpath.dirname (path_of_resource (path_of_datapack, category, new ResourceLocation (location.namespace, '')))
+  for await (const path of enumurate_files (dir))
+  {
+    if (path.endsWith (ResourceCategory[category].suffix))
+    {
+      const relative = stdpath.relative (root, path)
+      const entryLocation = new ResourceLocation (location.namespace, relative)
+      yield {path, location: entryLocation, data: await readResource (path_of_datapack, category, entryLocation)}
+    }
   }
 }
 
