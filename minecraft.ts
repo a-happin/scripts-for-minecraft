@@ -987,7 +987,7 @@ export const readResource: {
   }
 }
 
-async function * enumurate_files (dir: string | URL): AsyncIterableIterator <string>
+async function * enumurate_files (dir: string): AsyncIterableIterator <string>
 {
   for await (const entry of Deno.readDir (dir))
   {
@@ -1007,6 +1007,10 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
   if (typeof location === 'string')
   {
     location = ResourceLocation.fromString (location)
+  }
+  if (! (location.path === '' || location.path.endsWith ('/')))
+  {
+    location = new ResourceLocation (location.namespace, `${location.path}/`)
   }
   const dir = stdpath.dirname (path_of_resource (path_of_datapack, category, location))
   const root = stdpath.dirname (path_of_resource (path_of_datapack, category, new ResourceLocation (location.namespace, '')))
