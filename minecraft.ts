@@ -1003,7 +1003,7 @@ async function * enumurate_files (dir: string | URL): AsyncIterableIterator <str
   }
 }
 
-export async function * readResources (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) {
+export async function * readResources <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string) {
   if (typeof location === 'string')
   {
     location = ResourceLocation.fromString (location)
