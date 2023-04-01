@@ -62,7 +62,7 @@ export class ResourceLocation
   }
 }
 
-const ResourceCategory = {
+export const ResourceCategory = {
   "advancements": {
     folder: "advancements",
     suffix: ".json",
@@ -134,7 +134,7 @@ const ResourceCategory = {
     type: undefined as Tag | undefined,
   },
 } as const
-type ResourceCategory = keyof typeof ResourceCategory
+export type ResourceCategory = keyof typeof ResourceCategory
 
 export const path_of_resource = (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) => {
   if (typeof location === 'string')
