@@ -30,7 +30,7 @@ export const fetchVersionManifest = (): Promise <VersionManifest> => fetch ('htt
 // })
 
 export const ResourceCategory = {
-  "advancements": {
+  "advancement": {
     folder: "advancements",
     suffix: ".json",
     type: undefined as Advancement | undefined,
