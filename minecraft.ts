@@ -29,76 +29,98 @@ export const fetchVersionManifest = (): Promise <VersionManifest> => fetch ('htt
 //   return res
 // })
 
+const type_check = <T> (x: T) => x
+
 export const ResourceCategory = {
   "advancement": {
     folder: "advancements",
     suffix: ".json",
-    type: undefined as Advancement | undefined,
+    default_data: type_check <Advancement> ({
+      criteria: {
+        "": {
+          trigger: "impossible"
+        }
+      }
+    }),
   },
   "dimension_type": {
     folder: "dimension_type",
     suffix: ".json",
-    type: undefined as DimensionType | undefined,
+    default_data: type_check <DimensionType> ({}),
   },
   "function": {
     folder: "functions",
     suffix: ".mcfunction",
-    type: undefined as string | undefined,
+    default_data: type_check <string> (''),
   },
   "item_modifier": {
     folder: "item_modifiers",
     suffix: ".json",
-    type: undefined as ItemModifier | ItemModifier[] | undefined,
+    default_data: type_check <ItemModifier | ItemModifier[]> ([]),
   },
   "loot_table": {
     folder: "loot_tables",
     suffix: ".json",
-    type: undefined as LootTable | undefined,
+    default_data: type_check <LootTable> ({}),
   },
   "predicate": {
     folder: "predicates",
     suffix: ".json",
-    type: undefined as Predicate | Predicate[] | undefined,
+    default_data: type_check <Predicate | Predicate[]> ([]),
   },
   "recipe": {
     folder: "recipes",
     suffix: ".json",
-    type: undefined as Recipe | undefined,
+    default_data: type_check <Recipe> ({
+      type: 'crafting_special_armordye'
+    }),
   },
   "structure": {
     folder: "structures",
     suffix: ".nbt",
-    type: undefined as Uint8Array | undefined,
+    default_data: type_check <Uint8Array> (new Uint8Array ()),
   },
   "tag/block": {
     folder: "tags/blocks",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
   "tag/entity_type": {
     folder: "tags/entity_types",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
   "tag/fluid": {
     folder: "tags/fluids",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
   "tag/function": {
     folder: "tags/functions",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
   "tag/game_event": {
     folder: "tags/game_events",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
   "tag/item": {
     folder: "tags/items",
     suffix: ".json",
-    type: undefined as Tag | undefined,
+    default_data: type_check <Tag> ({
+      values: []
+    }),
   },
 } as const
 export type ResourceCategory = keyof typeof ResourceCategory
@@ -965,7 +987,7 @@ export type Tag = {
   values: (string | {id: string, required?: boolean})[]
 }
 
-export type ResourceType <T extends ResourceCategory> = Exclude <typeof ResourceCategory[T]['type'], undefined>
+export type ResourceType <T extends ResourceCategory> = typeof ResourceCategory[T]['default_data']
 
 export const readResource: {
   <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string): Promise <ResourceType <T>>
