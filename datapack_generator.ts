@@ -173,7 +173,7 @@ export class DatapackGenerator
     return new JSONResourceGenerator ('tag/item', location).also (it => this.children.push (it))
   }
 
-  async writeResource (path_of_datapack: string)
+  async writeResources (path_of_datapack: string)
   {
     const tasks = this.children.flatMap ((child) => [... child.writeResourceTasks ()])
     await Promise.all (tasks.map ((task) => task (path_of_datapack)))
