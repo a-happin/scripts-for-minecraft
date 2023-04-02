@@ -2,7 +2,7 @@ import * as Minecraft from './minecraft.ts'
 
 abstract class ResourceGenerator
 {
-  protected abstract readonly category: Minecraft.ResourceCategory
+  public abstract readonly category: Minecraft.ResourceCategory
   private readonly location: Minecraft.ResourceLocation
   private readonly children: ResourceGenerator[] = []
 
@@ -53,10 +53,19 @@ abstract class ResourceGenerator
   }
 }
 
-class PredicateResourceGenerator extends ResourceGenerator
+type JSONResourceCategory <T extends Minecraft.ResourceCategory = Minecraft.ResourceCategory> = T extends Minecraft.ResourceCategory ? typeof Minecraft.ResourceCategory[T]['suffix'] extends '.json' ? T : never : never
+class JSONResourceGenerator <T extends JSONResourceCategory> extends ResourceGenerator
 {
-  protected override readonly category = 'predicate'
-  public data = Minecraft.ResourceCategory[this.category].default_data
+  public data: Minecraft.ResourceType <T>
+
+  constructor (
+    override readonly category: T,
+    location: Minecraft.ResourceLocation | string,
+  )
+  {
+    super (location)
+    this.data = Minecraft.ResourceCategory[category].default_data
+  }
 
   override generateResource ()
   {
@@ -64,7 +73,7 @@ class PredicateResourceGenerator extends ResourceGenerator
   }
 }
 
-class MCFunctionResourceGenerator extends ResourceGenerator
+class MCFunctionGenerator extends ResourceGenerator
 {
   override readonly category = 'function'
   public readonly IMP_DOC: string[] = [`#> ${this}`]
@@ -80,7 +89,7 @@ class MCFunctionResourceGenerator extends ResourceGenerator
 
   define_inline_function (location: Minecraft.ResourceLocation | string)
   {
-    return this.define_inline_resource (MCFunctionResourceGenerator, location).also ((THIS) => {
+    return this.define_inline_resource (MCFunctionGenerator, location).also ((THIS) => {
       THIS.IMP_DOC.push (`#@within function ${this}`)
     })
   }
@@ -99,14 +108,69 @@ export class DatapackGenerator
 {
   private readonly children: ResourceGenerator[] = []
 
+  define_advancement (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('advancement', location).also (it => this.children.push (it))
+  }
+
+  define_dimension_type (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('dimension_type', location).also (it => this.children.push (it))
+  }
+
   define_function (location: Minecraft.ResourceLocation | string)
   {
-    return new MCFunctionResourceGenerator (location).also (it => this.children.push (it))
+    return new MCFunctionGenerator (location).also (it => this.children.push (it))
+  }
+
+  define_item_modifier (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('item_modifier', location).also (it => this.children.push (it))
+  }
+
+  define_loot_table (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('loot_table', location).also (it => this.children.push (it))
   }
 
   define_predicate (location: Minecraft.ResourceLocation | string)
   {
-    return new PredicateResourceGenerator (location).also (it => this.children.push (it))
+    return new JSONResourceGenerator ('predicate', location).also (it => this.children.push (it))
+  }
+
+  define_recipe (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('recipe', location).also (it => this.children.push (it))
+  }
+
+  define_tag_block (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/block', location).also (it => this.children.push (it))
+  }
+
+  define_tag_entity_type (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/entity_type', location).also (it => this.children.push (it))
+  }
+
+  define_tag_fluid (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/fluid', location).also (it => this.children.push (it))
+  }
+
+  define_tag_function (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/function', location).also (it => this.children.push (it))
+  }
+
+  define_tag_game_event (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/game_event', location).also (it => this.children.push (it))
+  }
+
+  define_tag_item (location: Minecraft.ResourceLocation | string)
+  {
+    return new JSONResourceGenerator ('tag/item', location).also (it => this.children.push (it))
   }
 
   async writeResource (path_of_datapack: string)
@@ -116,4 +180,3 @@ export class DatapackGenerator
   }
 }
 
-type JSONResourceCategory <T extends Minecraft.ResourceCategory = Minecraft.ResourceCategory> = T extends Minecraft.ResourceCategory ? typeof Minecraft.ResourceCategory[T]['suffix'] extends '.json' ? T : never : never
