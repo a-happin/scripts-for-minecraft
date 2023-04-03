@@ -196,7 +196,21 @@ export type ItemPredicate = {
   nbt?: string
   potion?: string
   tag?: string
-
+}
+export type DamageTypePredicate = {
+  direct_entity?: EntityPredicate
+  source_entity?: EntityPredicate
+  tags?: {
+    id: string
+    expected: boolean
+  }[]
+}
+export type DamagePredicate = {
+  blocked?: boolean
+  dealt?: Ranged <number>
+  taken?: Ranged <number>
+  type?: DamageTypePredicate
+  source_entity?: EntityPredicate
 }
 export type DistancePredicate = {
   absolute?: Ranged <number>
@@ -313,7 +327,7 @@ export type Predicate = ({
   }
 } | {
   condition: `${'minecraft:' | ''}damage_source_properties`
-  predicate: any
+  predicate: DamageTypePredicate
 } | {
   condition: `${'minecraft:' | ''}entity_properties`
   entity: 'this' | 'killer' | 'direct_killer' | 'killer_player'
@@ -656,13 +670,13 @@ export type Advancement = {
     } | {
       trigger: `${'minecraft:' | ''}entity_hurt_player`
       conditions?: {
-        damage?: any
+        damage?: DamagePredicate
       }
     } | {
       trigger: `${'minecraft:' | ''}entity_killed_player`
       conditions?: {
         entity?: EntityPredicate | Predicate[]
-        killing_blow?: any
+        killing_blow?: DamageTypePredicate
       }
     } | {
       trigger: `${'minecraft:' | ''}fall_from_height`
@@ -713,7 +727,7 @@ export type Advancement = {
       trigger: `${'minecraft:' | ''}kill_mob_near_sculk_catalyst`
       conditions?: {
         entity?: EntityPredicate | Predicate[]
-        killing_blow?: any
+        killing_blow?: DamageTypePredicate
       }
     } | {
       trigger: `${'minecraft:' | ''}killed_by_crossbow`
@@ -759,7 +773,7 @@ export type Advancement = {
     } | {
       trigger: `${'minecraft:' | ''}player_hurt_entity`
       conditions?: {
-        damage?: any
+        damage?: DamagePredicate
         entity?: EntityPredicate | Predicate[]
       }
     } | {
@@ -772,7 +786,7 @@ export type Advancement = {
       trigger: `${'minecraft:' | ''}player_killed_entity`
       conditions?: {
         entity?: EntityPredicate | Predicate[]
-        killing_blow?: any
+        killing_blow?: DamageTypePredicate
       }
     } | {
       trigger: `${'minecraft:' | ''}recipe_unlocked`
