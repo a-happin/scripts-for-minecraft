@@ -75,6 +75,11 @@ export const ResourceCategory = {
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
+  "tag/damage_type": {
+    folder: "tags/damage_type",
+    suffix: ".json",
+    declval: (): Tag => { throw new Error ('unreachable') },
+  },
   "tag/entity_type": {
     folder: "tags/entity_types",
     suffix: ".json",

@@ -140,6 +140,19 @@ class TagBlockGenerator extends ResourceGenerator
   }
 }
 
+class TagDamageTypeGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/damage_type'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
 class TagEntityTypeGenerator extends ResourceGenerator
 {
   override readonly category = 'tag/entity_type'
@@ -270,6 +283,11 @@ export class DatapackGenerator
   define_tag_block (location: Minecraft.ResourceLocation | string)
   {
     return new TagBlockGenerator (location).also (it => this.children.push (it))
+  }
+
+  define_tag_damage_type (location: Minecraft.ResourceLocation | string)
+  {
+    return new TagDamageTypeGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_entity_type (location: Minecraft.ResourceLocation | string)
