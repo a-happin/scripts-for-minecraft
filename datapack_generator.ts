@@ -53,18 +53,150 @@ abstract class ResourceGenerator
   }
 }
 
-type JSONResourceCategory <T extends Minecraft.ResourceCategory = Minecraft.ResourceCategory> = T extends Minecraft.ResourceCategory ? typeof Minecraft.ResourceCategory[T]['suffix'] extends '.json' ? T : never : never
-class JSONResourceGenerator <T extends JSONResourceCategory> extends ResourceGenerator
+class AdvancementGenerator extends ResourceGenerator
 {
-  public data: Minecraft.ResourceType <T>
+  override readonly category = 'advancement'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    criteria: {
+      "": {
+        trigger: "impossible"
+      }
+    }
+  }
 
-  constructor (
-    override readonly category: T,
-    location: Minecraft.ResourceLocation | string,
-  )
+  override generateResource ()
   {
-    super (location)
-    this.data = Minecraft.ResourceCategory[category].default_data
+    return this.data
+  }
+}
+
+class DimensionTypeGenerator extends ResourceGenerator
+{
+  override readonly category = 'dimension_type'
+  public data: Minecraft.ResourceType <typeof this.category> = {}
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class ItemModifierGenerator extends ResourceGenerator
+{
+  override readonly category = 'item_modifier'
+  public data: Minecraft.ResourceType <typeof this.category> = []
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class LootTableGenerator extends ResourceGenerator
+{
+  override readonly category = 'loot_table'
+  public data: Minecraft.ResourceType <typeof this.category> = {}
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class PredicateGenerator extends ResourceGenerator
+{
+  override readonly category = 'predicate'
+  public data: Minecraft.ResourceType <typeof this.category> = []
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class RecipeGenerator extends ResourceGenerator
+{
+  override readonly category = 'recipe'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    type: "crafting_special_armordye"
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagBlockGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/block'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagEntityTypeGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/entity_type'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagFluidGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/fluid'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagFunctionGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/function'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagGameEventGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/game_event'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
+class TagItemGenerator extends ResourceGenerator
+{
+  override readonly category = 'tag/item'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    values: []
   }
 
   override generateResource ()
@@ -78,14 +210,6 @@ class MCFunctionGenerator extends ResourceGenerator
   override readonly category = 'function'
   public readonly IMP_DOC: string[] = [`#> ${this}`]
   public readonly body: string[] = []
-
-  // static define_function (location:Minecraft.ResourceLocation | string, setup: (THIS: MCFunctionResourceGenerator) => unknown)
-  // {
-  //   // const resource = new MCFunctionResourceGenerator (location)
-  //   const resource = newResource ([], MCFunctionResourceGenerator, location)
-  //   setup (resource)
-  //   return resource
-  // }
 
   define_inline_function (location: Minecraft.ResourceLocation | string)
   {
@@ -110,12 +234,12 @@ export class DatapackGenerator
 
   define_advancement (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('advancement', location).also (it => this.children.push (it))
+    return new AdvancementGenerator (location).also (it => this.children.push (it))
   }
 
   define_dimension_type (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('dimension_type', location).also (it => this.children.push (it))
+    return new DimensionTypeGenerator (location).also (it => this.children.push (it))
   }
 
   define_function (location: Minecraft.ResourceLocation | string)
@@ -125,52 +249,52 @@ export class DatapackGenerator
 
   define_item_modifier (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('item_modifier', location).also (it => this.children.push (it))
+    return new ItemModifierGenerator (location).also (it => this.children.push (it))
   }
 
   define_loot_table (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('loot_table', location).also (it => this.children.push (it))
+    return new LootTableGenerator (location).also (it => this.children.push (it))
   }
 
   define_predicate (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('predicate', location).also (it => this.children.push (it))
+    return new PredicateGenerator (location).also (it => this.children.push (it))
   }
 
   define_recipe (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('recipe', location).also (it => this.children.push (it))
+    return new RecipeGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_block (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/block', location).also (it => this.children.push (it))
+    return new TagBlockGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_entity_type (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/entity_type', location).also (it => this.children.push (it))
+    return new TagEntityTypeGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_fluid (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/fluid', location).also (it => this.children.push (it))
+    return new TagFluidGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_function (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/function', location).also (it => this.children.push (it))
+    return new TagFunctionGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_game_event (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/game_event', location).also (it => this.children.push (it))
+    return new TagGameEventGenerator (location).also (it => this.children.push (it))
   }
 
   define_tag_item (location: Minecraft.ResourceLocation | string)
   {
-    return new JSONResourceGenerator ('tag/item', location).also (it => this.children.push (it))
+    return new TagItemGenerator (location).also (it => this.children.push (it))
   }
 
   async writeResources (path_of_datapack: string)

@@ -29,98 +29,76 @@ export const fetchVersionManifest = (): Promise <VersionManifest> => fetch ('htt
 //   return res
 // })
 
-const type_check = <T> (x: T) => x
-
 export const ResourceCategory = {
   "advancement": {
     folder: "advancements",
     suffix: ".json",
-    default_data: type_check <Advancement> ({
-      criteria: {
-        "": {
-          trigger: "impossible"
-        }
-      }
-    }),
+    declval: (): Advancement => { throw new Error ('unreachable') },
   },
   "dimension_type": {
     folder: "dimension_type",
     suffix: ".json",
-    default_data: type_check <DimensionType> ({}),
+    declval: (): DimensionType => { throw new Error ('unreachable') },
   },
   "function": {
     folder: "functions",
     suffix: ".mcfunction",
-    default_data: type_check <string> (''),
+    declval: (): string => { throw new Error ('unreachable') },
   },
   "item_modifier": {
     folder: "item_modifiers",
     suffix: ".json",
-    default_data: type_check <ItemModifier | ItemModifier[]> ([]),
+    declval: (): ItemModifier | ItemModifier[] => { throw new Error ('unreachable') },
   },
   "loot_table": {
     folder: "loot_tables",
     suffix: ".json",
-    default_data: type_check <LootTable> ({}),
+    declval: (): LootTable => { throw new Error ('unreachable') },
   },
   "predicate": {
     folder: "predicates",
     suffix: ".json",
-    default_data: type_check <Predicate | Predicate[]> ([]),
+    declval: (): Predicate | Predicate[] => { throw new Error ('unreachable') },
   },
   "recipe": {
     folder: "recipes",
     suffix: ".json",
-    default_data: type_check <Recipe> ({
-      type: 'crafting_special_armordye'
-    }),
+    declval: (): Recipe => { throw new Error ('unreachable') },
   },
   "structure": {
     folder: "structures",
     suffix: ".nbt",
-    default_data: type_check <Uint8Array> (new Uint8Array ()),
+    declval: (): Uint8Array => { throw new Error ('unreachable') },
   },
   "tag/block": {
     folder: "tags/blocks",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/entity_type": {
     folder: "tags/entity_types",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/fluid": {
     folder: "tags/fluids",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/function": {
     folder: "tags/functions",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/game_event": {
     folder: "tags/game_events",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/item": {
     folder: "tags/items",
     suffix: ".json",
-    default_data: type_check <Tag> ({
-      values: []
-    }),
+    declval: (): Tag => { throw new Error ('unreachable') },
   },
 } as const
 export type ResourceCategory = keyof typeof ResourceCategory
@@ -987,7 +965,7 @@ export type Tag = {
   values: (string | {id: string, required?: boolean})[]
 }
 
-export type ResourceType <T extends ResourceCategory> = typeof ResourceCategory[T]['default_data']
+export type ResourceType <T extends ResourceCategory> = ReturnType <typeof ResourceCategory[T]['declval']>
 
 export const readResource: {
   <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string): Promise <ResourceType <T>>
@@ -1067,4 +1045,10 @@ export const writeResource: {
     await Deno.mkdir (stdpath.dirname (path), {recursive: true})
     await Deno.writeFile (path, data)
   }
+}
+
+export const removeResource = async (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) =>
+{
+  const path = path_of_resource (path_of_datapack, category, location)
+  await Deno.remove (path)
 }
