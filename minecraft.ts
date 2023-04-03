@@ -14,20 +14,18 @@ export type VersionManifest = {
   }[]
 }
 
-export const fetchVersionManifest = (): Promise <VersionManifest> => fetch ('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json').then ((response) => response.json ())
+export const fetch_version_manifest = (): Promise <VersionManifest> => fetch ('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json').then ((response) => response.json ())
 
-// export type ProcessedRegistries = {
-//   [k: string]: readonly string[]
-// }
-// export const get_registries = (path_of_vanilla_datapack: string) => Deno.readTextFile (stdpath.join (path_of_vanilla_datapack, 'generated', 'reports', 'registries.json')).then ((contents) => {
-//   const data: {[k: string]: {entries: {[k: string]: any}}} = JSON.parse (contents)
-//   const res: ProcessedRegistries = {}
-//   for (const key of Object.keys (data))
-//   {
-//     res[`${ResourceLocation.fromString (key)}`] = Object.keys (data[key].entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()
-//   }
-//   return res
-// })
+export const get_processed_registries = async (path_of_vanilla_datapack: string) => {
+  const response = await fetch (stdpath.join (path_of_vanilla_datapack, 'generated', 'reports', 'registries.json'))
+  const data: {[k in string]: { entries: {[k in string]: any} }} = await response.json ()
+  const res: {[k in string]: readonly string[]} = {}
+  for (const key of Object.keys (data))
+  {
+    res[`${ResourceLocation.fromString (key)}`] = Object.keys (data[key].entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()
+  }
+  return res
+}
 
 export const ResourceCategory = {
   "advancement": {
