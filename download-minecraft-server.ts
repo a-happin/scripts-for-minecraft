@@ -1,4 +1,5 @@
-import {VersionManifest, exists, fetchJSON, download} from './util.ts'
+import {exists, fetchJSON, download} from './util.ts'
+import * as Minecraft from './minecraft.ts'
 
 if (Deno.args.length === 0)
 {
@@ -15,7 +16,7 @@ versions:
 }
 else
 {
-  const version_manifest = await fetchJSON ('https://launchermeta.mojang.com/mc/game/version_manifest.json') as VersionManifest
+  const version_manifest = await Minecraft.fetch_version_manifest ()
 
   const targets = new Set ()
   for (const arg of Deno.args)

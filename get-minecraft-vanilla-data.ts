@@ -1,4 +1,5 @@
-import {VersionManifest, exists, fetchJSON, download, ResourceLocation, readJSONFile, writeJSONFile} from './util.ts'
+import {exists, fetchJSON, download, readJSONFile, writeJSONFile} from './util.ts'
+import * as Minecraft from './minecraft.ts'
 
 if (Deno.args.length === 0)
 {
@@ -15,7 +16,7 @@ versions:
 }
 else
 {
-  const version_manifest = await fetchJSON ('https://launchermeta.mojang.com/mc/game/version_manifest.json') as VersionManifest
+  const version_manifest = await Minecraft.fetch_version_manifest ()
 
   const targets = new Set ()
   for (const arg of Deno.args)
@@ -101,8 +102,8 @@ else
             const registries = await readJSONFile (`${dirPath}/generated/reports/registries.json`) as { [k: string]: {entries: {[k: string]: any}} }
             for (const [key, value] of Object.entries (registries))
             {
-              const resource = ResourceLocation.fromString (key)
-              await writeJSONFile (`${dirPath}/processed/reports/registries/${resource.path}.json`, {values: Object.keys (value.entries).map ((x) => `${ResourceLocation.fromString (x)}`).sort ()})
+              const resource = Minecraft.ResourceLocation.fromString (key)
+              await writeJSONFile (`${dirPath}/processed/reports/registries/${resource.path}.json`, {values: Object.keys (value.entries).map ((x) => `${Minecraft.ResourceLocation.fromString (x)}`).sort ()})
             }
             console.log (`Processed Registory Data`)
 

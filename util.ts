@@ -1,18 +1,4 @@
-import * as stdpath from 'https://deno.land/std@0.178.0/path/mod.ts'
-
-export type VersionManifest = {
-  latest: {
-    release: string
-    snapshot: string
-  }
-  versions: readonly {
-    id: string
-    type: string
-    url: string
-    time: string
-    releaseTime: string
-  }[]
-}
+import * as stdpath from 'https://deno.land/std@0.182.0/path/mod.ts'
 
 export const exists = async (filePath: string): Promise <boolean> => {
   try
@@ -51,31 +37,4 @@ export const download = async (url: string, filePath: string): Promise <void> =>
     .then ((response) => response.arrayBuffer ())
     .then ((arrayBuffer) => new Uint8Array (arrayBuffer))
   await Deno.writeFile (filePath, data)
-}
-
-export class ResourceLocation
-{
-  constructor (
-    public namespace: string,
-    public path: string
-  )
-  {}
-
-  static fromString (str: string)
-  {
-    if (str.includes (':'))
-    {
-      const [namespace, path] = str.split (':')
-      return new ResourceLocation(namespace === '' ? 'minecraft' : namespace, path)
-    }
-    else
-    {
-      return new ResourceLocation ('minecraft', str)
-    }
-  }
-
-  toString ()
-  {
-    return this.namespace === 'minecraft' ? this.path === '' ? ':' : this.path : `${this.namespace}:${this.path}`
-  }
 }
