@@ -1042,6 +1042,8 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
   }
 }
 
+const append_ln_if_missing = (text: string) => text.endsWith ('\n') ? text : `${text}\n`
+
 export const writeResource: {
   <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string, data: ResourceType <T>): Promise <void>
 } = async (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string, data: any) =>
@@ -1050,12 +1052,12 @@ export const writeResource: {
   if (ResourceCategory[category].suffix === '.mcfunction')
   {
     await Deno.mkdir (stdpath.dirname (path), {recursive: true})
-    await Deno.writeTextFile (path, data)
+    await Deno.writeTextFile (path, append_ln_if_missing (data))
   }
   else if (ResourceCategory[category].suffix === '.json')
   {
     await Deno.mkdir (stdpath.dirname (path), {recursive: true})
-    await Deno.writeTextFile (path, JSON.stringify (data, undefined, 2))
+    await Deno.writeTextFile (path, append_ln_if_missing (JSON.stringify (data, undefined, 2)))
   }
   else if (ResourceCategory[category].suffix === '.nbt')
   {
