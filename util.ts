@@ -28,11 +28,11 @@ export const writeTextFile = async (path: string, data: string) => {
 
 export const writeJSONFile = (path: string, data: any) => writeTextFile (path, JSON.stringify (data, undefined, 2))
 
-export const fetchJSON = (url: string) => fetch (url).then ((response) => response.json ())
+export const fetchJSON = (url: string | URL) => fetch (url).then ((response) => response.json ())
 
-export const readJSONFile = (path: string) => Deno.readTextFile (path).then ((contents) => JSON.parse (contents))
+export const readJSONFile = (path: string | URL) => Deno.readTextFile (path).then ((contents) => JSON.parse (contents))
 
-export const download = async (url: string, filePath: string): Promise <void> => {
+export const download = async (url: string | URL, filePath: string | URL): Promise <void> => {
   const data = await fetch (url)
     .then ((response) => response.arrayBuffer ())
     .then ((arrayBuffer) => new Uint8Array (arrayBuffer))
