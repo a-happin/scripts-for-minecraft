@@ -49,7 +49,7 @@ else
     {
       const dirPath = `./${target}`
       tasks.push (async () => {
-        await Deno.mkdir (dirPath)
+        await Deno.mkdir (dirPath, {recursive: true})
         const version = await fetchJSON (target_version.url)
 
         const internal_tasks = []
