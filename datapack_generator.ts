@@ -70,6 +70,21 @@ class AdvancementGenerator extends ResourceGenerator
   }
 }
 
+class DamageTypeGenerator extends ResourceGenerator
+{
+  override readonly category = 'damage_type'
+  public data: Minecraft.ResourceType <typeof this.category> = {
+    exhaustion: 0,
+    message_id: '',
+    scaling: 'never',
+  }
+
+  override generateResource ()
+  {
+    return this.data
+  }
+}
+
 class DimensionTypeGenerator extends ResourceGenerator
 {
   override readonly category = 'dimension_type'
@@ -248,6 +263,11 @@ export class DatapackGenerator
   define_advancement (location: Minecraft.ResourceLocation | string)
   {
     return new AdvancementGenerator (location).also (it => this.children.push (it))
+  }
+
+  define_damage_type (location: Minecraft.ResourceLocation | string)
+  {
+    return new DamageTypeGenerator (location).also (it => this.children.push (it))
   }
 
   define_dimension_type (location: Minecraft.ResourceLocation | string)

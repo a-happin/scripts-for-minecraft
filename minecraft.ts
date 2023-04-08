@@ -33,6 +33,11 @@ export const ResourceCategory = {
     suffix: ".json",
     declval: (): Advancement => { throw new Error ('unreachable') },
   },
+  "damage_type": {
+    folder: "damage_type",
+    suffix: ".json",
+    declval: (): DamageType => { throw new Error ('unreachable') },
+  },
   "dimension_type": {
     folder: "dimension_type",
     suffix: ".json",
@@ -182,6 +187,13 @@ export type UUID_hex_string = string
 //#endregion
 
 export type DimensionType = {}
+
+export type DamageType = {
+  exhaustion: number
+  message_id: string
+  scaling: 'never' | 'always' | 'when_caused_by_living_non_player'
+  death_message_type?: 'default' | 'fall_variants' | 'intentional_game_design'
+}
 
 //#region Predicate
 export type ItemPredicate = {
