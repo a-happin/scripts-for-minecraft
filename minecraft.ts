@@ -601,6 +601,7 @@ export type Advancement = {
       item: string
       nbt?: string
     }
+    title: any
     frame?: 'task' | 'goal' | 'challenge'
     background?: string
     description: any
