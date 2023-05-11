@@ -259,6 +259,10 @@ class MCFunctionGenerator extends ResourceGenerator
 export class DatapackGenerator
 {
   private readonly children: ResourceGenerator[] = []
+  constructor (
+    private readonly path_of_datapack: string
+  )
+  {}
 
   define_advancement (location: Minecraft.ResourceLocation | string)
   {
@@ -335,10 +339,10 @@ export class DatapackGenerator
     return new TagItemGenerator (location).also (it => this.children.push (it))
   }
 
-  async writeResources (path_of_datapack: string)
+  async writeResources ()
   {
     const tasks = this.children.flatMap ((child) => [... child.writeResourceTasks ()])
-    await Promise.all (tasks.map ((task) => task (path_of_datapack)))
+    await Promise.all (tasks.map ((task) => task (this.path_of_datapack)))
   }
 }
 
