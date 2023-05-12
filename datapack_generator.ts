@@ -237,13 +237,18 @@ class MCFunctionGenerator extends ResourceGenerator
 {
   override readonly category = 'function'
   public readonly IMP_DOC: string[] = [`#> ${this}`]
-  public readonly body: string[] = []
+  private readonly body: string[] = []
 
   define_inline_function (location: Minecraft.ResourceLocation | string)
   {
     return this.define_inline_resource (MCFunctionGenerator, location).also ((THIS) => {
       THIS.IMP_DOC.push (`#@within function ${this}`)
     })
+  }
+
+  command (... xs: Parameters <typeof String.raw>)
+  {
+    this.body.push (String.raw (... xs))
   }
 
   override generateResource ()
