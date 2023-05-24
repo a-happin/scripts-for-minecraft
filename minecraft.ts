@@ -118,6 +118,10 @@ export class ResourceLocation
     public readonly path: string
   )
   {
+    if (! (/^[-.0-9_a-z]+$/.test (namespace) && /^[-./0-9_a-z]*$/.test (path)))
+    {
+      throw new Error (`'${this.toFullString ()}' is not a valid ResourceLocation`)
+    }
   }
 
   static fromString (str: string)
