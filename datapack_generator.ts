@@ -251,6 +251,11 @@ class MCFunctionGenerator extends ResourceGenerator
     this.body.push (String.raw (... xs))
   }
 
+  tellraw (targets: string, args: string | Minecraft.TellrawJSONComponent[] | Minecraft.TellrawJSONComponent)
+  {
+    this.command `tellraw ${targets} ${JSON.stringify (args)}`
+  }
+
   override generateResource ()
   {
     return [
