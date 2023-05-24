@@ -518,12 +518,12 @@ export type ItemModifier = (({
   type: string
 } | {
   function: `${'minecraft:' | ''}set_lore`
-  lore: any[]
+  lore: (TellrawJSONComponent[] | TellrawJSONComponent)[]
   entity: 'this' | 'killer' | 'direct_killer' | 'killer_player'
   replace?: boolean
 } | {
   function: `${'minecraft:' | ''}set_name`
-  name: any
+  name: TellrawJSONComponent[] | TellrawJSONComponent
   entity: 'this' | 'killer' | 'direct_killer' | 'killer_player'
 } | {
   function: `${'minecraft:' | ''}set_nbt`
@@ -605,10 +605,10 @@ export type Advancement = {
       item: string
       nbt?: string
     }
-    title: any
+    title: string | TellrawJSONComponent[] | TellrawJSONComponent
     frame?: 'task' | 'goal' | 'challenge'
     background?: string
-    description: any
+    description: string | TellrawJSONComponent[] | TellrawJSONComponent
     show_toast?: boolean
     announce_to_chat?: boolean
     hidden?: boolean
@@ -997,6 +997,71 @@ export type Recipe = CraftingShapedRecipe | CraftingShapelessRecipe | SmeltingRe
 export type Tag = {
   replace?: boolean
   values: (string | {id: string, required?: boolean})[]
+}
+
+export type TellrawJSONComponent = ({
+  text: string
+} | {
+  translate: string
+  with?: TellrawJSONComponent[]
+} | {
+  score: {
+    name: string
+    objective: string
+    value?: string
+  }
+} | {
+  selector: string
+  separator?: string
+} | {
+  keybind: string
+} | {
+  block: string
+  nbt: string
+  interpret?: boolean
+  separator?: string
+} | {
+  entity: string
+  nbt: string
+  interpret?: boolean
+  separator?: string
+} | {
+  storage: string
+  nbt: string
+  interpret?: boolean
+  separator?: string
+}) & {
+  extra?: TellrawJSONComponent[]
+  color?: `#${string}` | 'black' | 'dark_blue' | 'dark_green' | 'dark_aqua' | 'dark_red' | 'dark_purple' | 'gold' | 'gray' | 'dark_gray' | 'blue' | 'green' | 'aqua' | 'red' | 'light_purple' | 'yellow' | 'white'
+  font?: string
+  bold?: boolean
+  italic?: boolean
+  underlined?: boolean
+  strikethrough?: boolean
+  obfuscated?: boolean
+  insertion?: string
+  clickEvent?: {
+    action: 'open_url' | 'open_file' | 'run_command' | 'suggest_command' | 'change_page' | 'copy_to_clipboard'
+    value: string
+  }
+  hoverEvent?: {
+    action: 'show_text'
+    contents: string | TellrawJSONComponent[] | TellrawJSONComponent
+  } | {
+    action: 'show_item'
+    contents: {
+      id: string
+      count?: number
+      tag?: {}
+    }
+  } | {
+    action: 'show_entity'
+    contents: {
+      name?: TellrawJSONComponent,
+      type: string
+      id: string
+    }
+  }
 }
 
 export type ResourceType <T extends ResourceCategory> = ReturnType <typeof ResourceCategory[T]['declval']>
