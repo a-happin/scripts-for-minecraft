@@ -1,4 +1,4 @@
-import * as stdpath from 'https://deno.land/std@0.182.0/path/mod.ts'
+import * as stdpath from 'https://deno.land/std@0.191.0/path/mod.ts'
 
 export const exists = async (filePath: string): Promise <boolean> => {
   try

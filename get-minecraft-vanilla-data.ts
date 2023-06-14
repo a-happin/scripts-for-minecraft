@@ -54,40 +54,47 @@ else
 
         const internal_tasks = []
 
-        if (await Promise.any (['assets', 'data'].map ((path) => exists (`${dirPath}/${path}`))))
+        const [exists_assets, exists_data] = await Promise.all (['assets', 'data'].map ((path) => exists (`${dirPath}/${path}`)))
+        if (exists_assets && exists_data)
         {
-          console.log (`${dirPath}/assets or ${dirPath}/data already exist`)
+          console.log (`${dirPath}/assets and ${dirPath}/data already exist. skipped.`)
         }
         else
         {
-          internal_tasks.push (async () => {
-            const clientPath = `${dirPath}/client.jar`
-            await download_with_progress (version.downloads.client.url, clientPath)
-
-            console.log (`Extracting ${clientPath} ...`)
-            const unzip = new Deno.Command ('unzip', {
-              args: ['-q', 'client.jar', 'assets/*', 'data/*', '-x', '*/.mcassetsroot'],
-              cwd: dirPath,
-              stdout: 'inherit',
-              stderr: 'inherit',
-            })
-            const {code} = await unzip.output ()
-            if (code === 0)
-            {
-              console.log (`Extracted ${clientPath}`)
-            }
-            else
-            {
-              console.error (`Error» Failed to Extacting ${clientPath} with error code ${code}`)
-            }
-
-            console.log (`Removing ${clientPath} ...`)
-            await Deno.remove (clientPath)
-            console.log (`Removed ${clientPath}`)
+          if (exists_assets)
+          {
+            console.log (`${dirPath}/assets already exists.`)
+          }
+          if (exists_data)
+          {
+            console.log (`${dirPath}/data already exists.`)
+          }
+          const clientPath = `${dirPath}/client.jar`
+          await download_with_progress (version.downloads.client.url, clientPath)
+          console.log (`Extracting ${clientPath} ...`)
+          const unzip = new Deno.Command ('unzip', {
+            args: ['-q', 'client.jar', ... (exists_assets ? ['assets/*'] : []), ... (exists_data ? ['data/*'] : []), '-x', '*/.mcassetsroot'],
+            cwd: dirPath,
+            stdout: 'inherit',
+            stderr: 'inherit',
           })
+          const {code} = await unzip.output ()
+          if (code === 0)
+          {
+            console.log (`Extracted ${clientPath}`)
+          }
+          else
+          {
+            console.error (`Error» Failed to Extacting ${clientPath} with error code ${code}`)
+          }
+
+          console.log (`Removing ${clientPath} ...`)
+          await Deno.remove (clientPath)
+          console.log (`Removed ${clientPath}`)
         }
 
-        for (const lang of ['ja_jp'] as const)
+        const langs = ['ja_jp'] as const
+        for (const lang of langs)
         {
           const langFilePath = `${dirPath}/assets/minecraft/lang/${lang}.json`
           if (await exists (langFilePath))
@@ -96,17 +103,15 @@ else
           }
           else
           {
-            internal_tasks.push (async () => {
-              console.log (`Fetching AssetIndex from ${version.assetIndex.url} ...`)
-              const assetIndex = await fetchJSON (version.assetIndex.url)
-              console.log (`Fetched AssetIndex`)
-              const hash = assetIndex.objects[`minecraft/lang/${lang}.json`].hash
-              const langFileURL = `https://resources.download.minecraft.net/${hash.slice (0, 2)}/${hash}`
-              console.log (`Downloading ${langFileURL} to ${langFilePath} ...`)
-              const lang_json = await fetchJSON (langFileURL)
-              await Deno.writeTextFile (langFilePath, JSON.stringify (lang_json, undefined, 2))
-              console.log (`Downloaded ${langFilePath}`)
-            })
+            console.log (`Fetching AssetIndex from ${version.assetIndex.url} ...`)
+            const assetIndex = await fetchJSON (version.assetIndex.url)
+            console.log (`Fetched AssetIndex`)
+            const hash = assetIndex.objects[`minecraft/lang/${lang}.json`].hash
+            const langFileURL = `https://resources.download.minecraft.net/${hash.slice (0, 2)}/${hash}`
+            console.log (`Downloading ${langFileURL} to ${langFilePath} ...`)
+            const lang_json = await fetchJSON (langFileURL)
+            await Deno.writeTextFile (langFilePath, JSON.stringify (lang_json, undefined, 2))
+            console.log (`Downloaded ${langFilePath}`)
           }
         }
 
