@@ -336,7 +336,10 @@ export type LocationPredicate = {
   structure?: string
 }
 export type Predicate = ({
-  condition: `${'minecraft:' | ''}alternative`
+  condition: `${'minecraft:' | ''}all_of`
+  terms: Predicate[]
+} | {
+  condition: `${'minecraft:' | ''}${'alternative' | 'any_of'}`
   terms: Predicate[]
 } | {
   condition: `${'minecraft:' | ''}block_state_property`
@@ -474,6 +477,9 @@ export type ItemModifier = (({
   count: NumberProvider
   limit?: number
 } | {
+  function: `${'minecraft:' | ''}reference`
+  name: string
+} | {
   function: `${'minecraft:' | ''}set_attributes`
   modifiers: {
     name: string
@@ -595,6 +601,7 @@ export type LootTable = {
     bonus_rolls?: NumberProvider
     entries: LootTableEntryProvider[]
   }[]
+  random_sequence?: string
 }
 //#endregion
 
@@ -902,6 +909,7 @@ export type Advancement = {
     experience?: number
     function?: string
   }
+  sends_telemetry_event?: boolean
 }
 //#endregion
 
