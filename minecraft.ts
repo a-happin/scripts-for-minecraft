@@ -920,9 +920,9 @@ export type CraftingShapedRecipe = {
   key: {
     [k: string]: {
       item: string
-      tag: undefined
+      tag?: undefined
     } | {
-      item: undefined
+      item?: undefined
       tag: string
     }
   }
@@ -937,9 +937,9 @@ export type CraftingShapelessRecipe = {
   group?: string
   ingredients: {
     item: string
-    tag: undefined
+    tag?: undefined
   } | {
-    item: undefined
+    item?: undefined
     tag: string
   }[]
   result: {
@@ -954,9 +954,9 @@ export type SmeltingRecipe = {
   experience?: number
   ingredient: {
       item: string
-      tag: undefined
+      tag?: undefined
     } | {
-      item: undefined
+      item?: undefined
       tag: string
     }
   result: string
@@ -966,9 +966,9 @@ export type StoneCuttingRecipe = {
   group?: string
   ingredient: {
       item: string
-      tag: undefined
+      tag?: undefined
     } | {
-      item: undefined
+      item?: undefined
       tag: string
     }
   result: string
@@ -979,16 +979,16 @@ export type SmithingRecipe = {
   group?: string
   base: {
       item: string
-      tag: undefined
+      tag?: undefined
     } | {
-      item: undefined
+      item?: undefined
       tag: string
     }
   addition: {
       item: string
-      tag: undefined
+      tag?: undefined
     } | {
-      item: undefined
+      item?: undefined
       tag: string
     }
   result: {
