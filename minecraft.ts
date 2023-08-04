@@ -747,8 +747,7 @@ export type Advancement = {
     } | {
       trigger: `${'minecraft:' | ''}item_used_on_block`
       conditions?: {
-        location?: LocationPredicate
-        item?: ItemPredicate
+        location?: Predicate[]
       }
     } | {
       trigger: `${'minecraft:' | ''}kill_mob_near_sculk_catalyst`
