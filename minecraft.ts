@@ -624,8 +624,9 @@ export type Advancement = {
   criteria: {
     [criterion_id in string]: ({
       trigger: `${'minecraft:' | ''}allay_drop_item_on_block`
-      location?: LocationPredicate
-      item?: ItemPredicate
+      conditions?: {
+        location?: Predicate[]
+      }
     } | {
       trigger: `${'minecraft:' | ''}avoid_vibration`
     } | {
@@ -784,12 +785,7 @@ export type Advancement = {
     } | {
       trigger: `${'minecraft:' | ''}placed_block`
       conditions?: {
-        block?: string
-        item?: ItemPredicate
-        location?: LocationPredicate
-        state?: {
-          [k in string]: Ranged <boolean | number | string>
-        }
+        location?: Predicate[]
       }
     } | {
       trigger: `${'minecraft:' | ''}player_generates_container_loot`
