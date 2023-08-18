@@ -64,6 +64,13 @@ class AdvancementGenerator extends ResourceGenerator
     }
   }
 
+  define_inline_function (location: Minecraft.ResourceLocation | string)
+  {
+    return this.define_inline_resource (MCFunctionGenerator, location).also ((THIS) => {
+      THIS.doc `@within advancement ${this}`
+    })
+  }
+
   override generateResource ()
   {
     return this.data
@@ -201,6 +208,13 @@ class TagFunctionGenerator extends ResourceGenerator
     values: []
   }
 
+  define_inline_function (location: Minecraft.ResourceLocation | string)
+  {
+    return this.define_inline_resource (MCFunctionGenerator, location).also ((THIS) => {
+      THIS.doc `@within tag/function ${this}`
+    })
+  }
+
   override generateResource ()
   {
     return this.data
@@ -236,14 +250,19 @@ class TagItemGenerator extends ResourceGenerator
 class MCFunctionGenerator extends ResourceGenerator
 {
   override readonly category = 'function'
-  public readonly IMP_DOC: string[] = [`#> ${this}`]
+  private readonly IMP_DOC: string[] = [`#> ${this}`]
   private readonly body: string[] = []
 
   define_inline_function (location: Minecraft.ResourceLocation | string)
   {
     return this.define_inline_resource (MCFunctionGenerator, location).also ((THIS) => {
-      THIS.IMP_DOC.push (`#@within function ${this}`)
+      THIS.doc `@within function ${this}`
     })
+  }
+
+  doc (... xs: Parameters <typeof String.raw>)
+  {
+    this.IMP_DOC.push (`#${String.raw (... xs)}`)
   }
 
   command (... xs: Parameters <typeof String.raw>)
@@ -251,7 +270,7 @@ class MCFunctionGenerator extends ResourceGenerator
     this.body.push (String.raw (... xs))
   }
 
-  tellraw (targets: string, args: string | Minecraft.TellrawJSONComponent[] | Minecraft.TellrawJSONComponent)
+  tellraw (targets: string, args: string | Minecraft.TellrawJSONComponent | (string | Minecraft.TellrawJSONComponent)[])
   {
     this.command `tellraw ${targets} ${JSON.stringify (args)}`
   }

@@ -612,10 +612,10 @@ export type Advancement = {
       item: string
       nbt?: string
     }
-    title: string | TellrawJSONComponent[] | TellrawJSONComponent
+    title: string | TellrawJSONComponent | (string | TellrawJSONComponent)[]
     frame?: 'task' | 'goal' | 'challenge'
     background?: string
-    description: string | TellrawJSONComponent[] | TellrawJSONComponent
+    description: string | TellrawJSONComponent | (string | TellrawJSONComponent)[]
     show_toast?: boolean
     announce_to_chat?: boolean
     hidden?: boolean
@@ -1006,7 +1006,7 @@ export type TellrawJSONComponent = ({
   text: string
 } | {
   translate: string
-  with?: TellrawJSONComponent[]
+  with?: (string | TellrawJSONComponent)[]
 } | {
   score: {
     name: string
@@ -1034,7 +1034,7 @@ export type TellrawJSONComponent = ({
   interpret?: boolean
   separator?: string
 }) & {
-  extra?: TellrawJSONComponent[]
+  extra?: (string | TellrawJSONComponent)[]
   color?: `#${string}` | 'black' | 'dark_blue' | 'dark_green' | 'dark_aqua' | 'dark_red' | 'dark_purple' | 'gold' | 'gray' | 'dark_gray' | 'blue' | 'green' | 'aqua' | 'red' | 'light_purple' | 'yellow' | 'white'
   font?: string
   bold?: boolean
@@ -1049,7 +1049,7 @@ export type TellrawJSONComponent = ({
   }
   hoverEvent?: {
     action: 'show_text'
-    contents: string | TellrawJSONComponent[] | TellrawJSONComponent
+    contents: string | TellrawJSONComponent | (string | TellrawJSONComponent)[]
   } | {
     action: 'show_item'
     contents: {
