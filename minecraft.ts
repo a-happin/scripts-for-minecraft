@@ -29,81 +29,97 @@ export const fetch_version_manifest = (): Promise <VersionManifest> => fetch ('h
 
 export const ResourceCategory = {
   "advancement": {
+    pack_type: 'data',
     folder: "advancements",
     suffix: ".json",
     declval: (): Advancement => { throw new Error ('unreachable') },
   },
   "damage_type": {
+    pack_type: 'data',
     folder: "damage_type",
     suffix: ".json",
     declval: (): DamageType => { throw new Error ('unreachable') },
   },
   "dimension_type": {
+    pack_type: 'data',
     folder: "dimension_type",
     suffix: ".json",
     declval: (): DimensionType => { throw new Error ('unreachable') },
   },
   "function": {
+    pack_type: 'data',
     folder: "functions",
     suffix: ".mcfunction",
     declval: (): string => { throw new Error ('unreachable') },
   },
   "item_modifier": {
+    pack_type: 'data',
     folder: "item_modifiers",
     suffix: ".json",
     declval: (): ItemModifier | ItemModifier[] => { throw new Error ('unreachable') },
   },
   "loot_table": {
+    pack_type: 'data',
     folder: "loot_tables",
     suffix: ".json",
     declval: (): LootTable => { throw new Error ('unreachable') },
   },
   "predicate": {
+    pack_type: 'data',
     folder: "predicates",
     suffix: ".json",
     declval: (): Predicate | Predicate[] => { throw new Error ('unreachable') },
   },
   "recipe": {
+    pack_type: 'data',
     folder: "recipes",
     suffix: ".json",
     declval: (): Recipe => { throw new Error ('unreachable') },
   },
   "structure": {
+    pack_type: 'data',
     folder: "structures",
     suffix: ".nbt",
     declval: (): Uint8Array => { throw new Error ('unreachable') },
   },
   "tag/block": {
+    pack_type: 'data',
     folder: "tags/blocks",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/damage_type": {
+    pack_type: 'data',
     folder: "tags/damage_type",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/entity_type": {
+    pack_type: 'data',
     folder: "tags/entity_types",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/fluid": {
+    pack_type: 'data',
     folder: "tags/fluids",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/function": {
+    pack_type: 'data',
     folder: "tags/functions",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/game_event": {
+    pack_type: 'data',
     folder: "tags/game_events",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
   },
   "tag/item": {
+    pack_type: 'data',
     folder: "tags/items",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
