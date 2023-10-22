@@ -36,5 +36,10 @@ export const download = async (url: string | URL, filePath: string | URL): Promi
   const data = await fetch (url)
     .then ((response) => response.arrayBuffer ())
     .then ((arrayBuffer) => new Uint8Array (arrayBuffer))
+  if (typeof filePath === 'string')
+  {
+    await Deno.mkdir (stdpath.dirname (filePath), {recursive: true})
+  }
   await Deno.writeFile (filePath, data)
 }
+

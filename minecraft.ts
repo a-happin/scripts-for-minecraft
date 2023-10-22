@@ -14,6 +14,47 @@ export type VersionManifest = {
   }[]
 }
 
+export type Version = {
+  arguments: {
+    game: unknown
+    jvm: unknown
+  }
+  assetIndex: {
+    id: string
+    sha1: string
+    size: number
+    totalSize: number
+    url: string
+  }
+  assets: unknown
+  complianceLevel: number
+  downloads: {
+    [k in 'client' | 'client_mappings' | 'server' | 'server_mappings']: {
+      sha1: string
+      size: number
+      url: string
+    }
+  }
+  id: string
+  javaVersion: unknown
+  libraries: unknown
+  logging: unknown
+  mainClass: string
+  minimumLauncherVersion: number
+  releaseTime: string
+  time: string
+  type: string
+}
+
+export type AssetIndex = {
+  objects: {
+    [k in string]: {
+      hash: string
+      size: number
+    }
+  }
+}
+
 export const fetch_version_manifest = (): Promise <VersionManifest> => fetch ('https://launchermeta.mojang.com/mc/game/version_manifest_v2.json').then ((response) => response.json ())
 
 // export const get_processed_registries = async (path_of_vanilla_datapack: string) => {
@@ -28,104 +69,199 @@ export const fetch_version_manifest = (): Promise <VersionManifest> => fetch ('h
 // }
 
 export const ResourceCategory = {
+  "pack.mcmeta": {
+    pack_type: '',
+    folder: ".",
+    suffix: ".json",
+    get default_value (): PackMCMeta {
+      throw new Error ('not implemented')
+    },
+  },
   "advancement": {
     pack_type: 'data',
     folder: "advancements",
     suffix: ".json",
     declval: (): Advancement => { throw new Error ('unreachable') },
+    get default_value (): Advancement {
+      return {
+        criteria: {
+          '': {
+            trigger: 'impossible'
+          }
+        }
+      }
+    },
   },
   "damage_type": {
     pack_type: 'data',
     folder: "damage_type",
     suffix: ".json",
     declval: (): DamageType => { throw new Error ('unreachable') },
+    get default_value (): DamageType {
+      return {
+        exhaustion: 0,
+        message_id: '',
+        scaling: 'never',
+      }
+    },
   },
   "dimension_type": {
     pack_type: 'data',
     folder: "dimension_type",
     suffix: ".json",
     declval: (): DimensionType => { throw new Error ('unreachable') },
+    get default_value (): DimensionType {
+      return new Error ('not implemented')
+    },
   },
   "function": {
     pack_type: 'data',
     folder: "functions",
     suffix: ".mcfunction",
     declval: (): string => { throw new Error ('unreachable') },
+    get default_value (): string {
+      return ''
+    },
   },
   "item_modifier": {
     pack_type: 'data',
     folder: "item_modifiers",
     suffix: ".json",
     declval: (): ItemModifier | ItemModifier[] => { throw new Error ('unreachable') },
+    get default_value (): ItemModifier | ItemModifier[] {
+      return []
+    },
   },
   "loot_table": {
     pack_type: 'data',
     folder: "loot_tables",
     suffix: ".json",
     declval: (): LootTable => { throw new Error ('unreachable') },
+    get default_value (): LootTable {
+      return {}
+    },
   },
   "predicate": {
     pack_type: 'data',
     folder: "predicates",
     suffix: ".json",
     declval: (): Predicate | Predicate[] => { throw new Error ('unreachable') },
+    get default_value (): Predicate | Predicate[] {
+      return []
+    },
   },
   "recipe": {
     pack_type: 'data',
     folder: "recipes",
     suffix: ".json",
     declval: (): Recipe => { throw new Error ('unreachable') },
+    get default_value (): Recipe {
+      return {
+        type: 'crafting_special_armordye'
+      }
+    },
   },
   "structure": {
     pack_type: 'data',
     folder: "structures",
     suffix: ".nbt",
     declval: (): Uint8Array => { throw new Error ('unreachable') },
+    get default_value (): Uint8Array {
+      throw new Error ('not implemented')
+    },
   },
   "tag/block": {
     pack_type: 'data',
     folder: "tags/blocks",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/damage_type": {
     pack_type: 'data',
     folder: "tags/damage_type",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/entity_type": {
     pack_type: 'data',
     folder: "tags/entity_types",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/fluid": {
     pack_type: 'data',
     folder: "tags/fluids",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/function": {
     pack_type: 'data',
     folder: "tags/functions",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/game_event": {
     pack_type: 'data',
     folder: "tags/game_events",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
   },
   "tag/item": {
     pack_type: 'data',
     folder: "tags/items",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
+    get default_value (): Tag {
+      return {
+        values: []
+      }
+    },
+  },
+  "lang": {
+    pack_type: 'assets',
+    folder: "lang",
+    suffix: ".json",
+    declval: (): {[k in string]: string} => { throw new Error ('unreachable') },
+    get default_value (): {[k in string]: string} {
+      return {}
+    },
   },
 } as const
 export type ResourceCategory = keyof typeof ResourceCategory
+export type DataResourceCategory = {[k in ResourceCategory]: typeof ResourceCategory[k]['pack_type'] extends 'data' ? k : never}[ResourceCategory]
+export type AssetsResourceCategory = {[k in ResourceCategory]: typeof ResourceCategory[k]['pack_type'] extends 'assets' ? k : never}[ResourceCategory]
+
+// type ResourceLocationLetter = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | '_'
 
 export class ResourceLocation
 {
@@ -164,12 +300,16 @@ export class ResourceLocation
   }
 }
 
-export const path_of_resource = (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) => {
+export const path_of_resource = (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string) => {
+  if (category === 'pack.mcmeta')
+  {
+    return `${path_of_pack}/pack.mcmeta`
+  }
   if (typeof location === 'string')
   {
     location = ResourceLocation.fromString (location)
   }
-  return `${path_of_datapack}/data/${location.namespace}/${ResourceCategory[category].folder}/${location.path}${ResourceCategory[category].suffix}`
+  return `${path_of_pack}/${ResourceCategory[category].pack_type}/${location.namespace}/${ResourceCategory[category].folder}/${location.path}${ResourceCategory[category].suffix}`
 }
 
 type RequireOne <T, K extends keyof T = keyof T> = K extends keyof T ? {[k in K]-?: Exclude <T[k], undefined>} & T : never
@@ -205,6 +345,13 @@ export type NumberProvider = number | {
 }
 export type UUID_hex_string = string
 //#endregion
+
+export type PackMCMeta = {
+  pack: {
+    pack_format: number
+    description: string | TellrawJSONComponent | TellrawJSONComponent[]
+  }
+}
 
 export type DimensionType = {}
 
@@ -1083,7 +1230,7 @@ export type TellrawJSONComponent = ({
   }
 }
 
-export type ResourceType <T extends ResourceCategory> = ReturnType <typeof ResourceCategory[T]['declval']>
+export type ResourceType <T extends ResourceCategory> = typeof ResourceCategory[T]['default_value']
 
 export const readResource: {
   <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string): Promise <ResourceType <T>>
@@ -1146,10 +1293,10 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
 const append_ln_if_missing = (text: string) => text.endsWith ('\n') ? text : `${text}\n`
 
 export const writeResource: {
-  <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string, data: ResourceType <T>): Promise <void>
-} = async (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string, data: any) =>
+  <T extends ResourceCategory> (path_of_pack: string, category: T, location: ResourceLocation | string, data: ResourceType <T>): Promise <void>
+} = async (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string, data: any) =>
 {
-  const path = path_of_resource (path_of_datapack, category, location)
+  const path = path_of_resource (path_of_pack, category, location)
   if (ResourceCategory[category].suffix === '.mcfunction')
   {
     await Deno.mkdir (stdpath.dirname (path), {recursive: true})
@@ -1167,8 +1314,9 @@ export const writeResource: {
   }
 }
 
-export const removeResource = async (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) =>
+export const removeResource = async (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string) =>
 {
-  const path = path_of_resource (path_of_datapack, category, location)
+  const path = path_of_resource (path_of_pack, category, location)
   await Deno.remove (path)
 }
+
