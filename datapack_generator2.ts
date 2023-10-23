@@ -65,6 +65,7 @@ class MCFunctionGenerator extends ResourceGenerator {
   override readonly category = 'function'
   private readonly IMP_DOC: string[] = [`#> ${this}`]
   private readonly body: string[] = []
+  private indent_level = 0
 
   doc (... xs: Parameters <typeof String.raw>)
   {
@@ -73,12 +74,26 @@ class MCFunctionGenerator extends ResourceGenerator {
 
   command (... xs: Parameters <typeof String.raw>)
   {
-    this.body.push (`#${String.raw (... xs)}`)
+    this.body.push ([... new Array (this.indent_level).fill (' '), ... String.raw (... xs).split (/[^\S\n]*\n[^\S\n]*/)].join (' '))
   }
 
   tellraw (targets: string, args: string | Minecraft.TellrawJSONComponent | (string | Minecraft.TellrawJSONComponent)[])
   {
     this.command `tellraw ${targets} ${JSON.stringify (args)}`
+  }
+
+  indent (f: () => void)
+  {
+    ++ this.indent_level
+    f ()
+    -- this.indent_level
+  }
+
+  stack (f: () => void)
+  {
+    this.command `data modify storage : _ append value {}`
+    this.indent (f)
+    this.command `data remove storage : _[-1]`
   }
 
   override generate_resource (): Minecraft.ResourceType <typeof this.category> {
@@ -90,11 +105,9 @@ class MCFunctionGenerator extends ResourceGenerator {
   }
 }
 
-abstract class JSONResourceGenerator extends ResourceGenerator {
+abstract class JSONResourceGenerator extends ResourceGenerator
+{
   public abstract data: Minecraft.ResourceType <typeof this.category>
-
-  //public abstract default_data (): Minecraft.ResourceType <typeof this.category>
-
   override generate_resource ()
   {
     return this.data
@@ -228,9 +241,9 @@ const ResourceGenerators = {
 } as const
 
 export type Pack = {
-  pack?: Minecraft.ResourceType <'pack.mcmeta'>['pack']
+  'pack.mcmeta'?: Minecraft.ResourceType <'pack.mcmeta'>
 } & {
-  [category in Minecraft.ResourceCategory]?: {
+  [category in Exclude <Minecraft.ResourceCategory, 'pack.mcmeta'>]?: {
     [location in string]: (THIS: InstanceType <typeof ResourceGenerators[category]>) => void
   }
 }
@@ -253,12 +266,11 @@ export const generate_pack = async (path_of_pack: string, pack: Pack) => {
     {
       throw new Error (`unexpected error`)
     }
-    if (category === 'pack')
+    if (category === 'pack.mcmeta')
     {
-      const res = location_and_f
-      if (tasks[`pack.mcmeta`] === undefined)
+      if (tasks[category] === undefined)
       {
-        tasks[`pack.mcmeta`] = () => Minecraft.writeResource (path_of_pack, 'pack.mcmeta', '', {pack: res})
+        tasks[category] = () => Minecraft.writeResource (path_of_pack, category, '', location_and_f)
       }
       else
       {
@@ -267,9 +279,8 @@ export const generate_pack = async (path_of_pack: string, pack: Pack) => {
     }
     else
     {
-      for (const [location_str, f] of object_entries (location_and_f))
+      for (const [location, f] of object_entries (location_and_f))
       {
-        const location = Minecraft.ResourceLocation.fromString (location_str)
         const generator = new ResourceGenerators[category] (location)
         // deno-lint-ignore no-explicit-any
         f (generator as any)
@@ -289,20 +300,3 @@ export const generate_pack = async (path_of_pack: string, pack: Pack) => {
   }
   await Promise.all (Object.values (tasks).map ((task) => task ()))
 }
-
-generate_pack ('test_result', {
-  "tag/fluid": {
-    a (THIS) {
-      return ''
-    }
-  },
-  pack: {
-    pack_format: 18,
-    description: ''
-  },
-  function: {
-    [`f`] (THIS) {
-      THIS.define_inline_resource ('function', 'a:f2')
-    },
-  },
-})

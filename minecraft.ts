@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import * as stdpath from 'https://deno.land/std@0.182.0/path/mod.ts'
 
 export type VersionManifest = {
@@ -349,11 +350,38 @@ export type UUID_hex_string = string
 export type PackMCMeta = {
   pack: {
     pack_format: number
-    description: string | TellrawJSONComponent | TellrawJSONComponent[]
+    description: string | TellrawJSONComponent | (string | TellrawJSONComponent)[]
+    supported_formats?: number | number[] | {
+      min_inclusive: number
+      max_inclusive: number
+    }
+  }
+  filter?: {
+    block: {
+      namespace: string
+      path: string
+    }[]
+  }
+  overlays?: {
+    entries: {
+      formats: number | number[] | {
+        min_inclusive: number
+        max_inclusive: number
+      }
+      directory: string
+    }[]
+  }
+
+  language?: {
+    [k in string]: {
+      name: string
+      region: string
+      bidirectional: boolean
+    }
   }
 }
 
-export type DimensionType = {}
+export type DimensionType = object
 
 export type DamageType = {
   exhaustion: number
@@ -1218,7 +1246,7 @@ export type TellrawJSONComponent = ({
     contents: {
       id: string
       count?: number
-      tag?: {}
+      tag?: object
     }
   } | {
     action: 'show_entity'
