@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import * as stdpath from 'https://deno.land/std@0.182.0/path/mod.ts'
+import * as stdpath from 'https://deno.land/std/path/mod.ts'
 
 export type VersionManifest = {
   latest: {
