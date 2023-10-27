@@ -1,4 +1,4 @@
-import * as stdpath from 'https://deno.land/std@0.191.0/path/mod.ts'
+import * as stdpath from 'https://deno.land/std/path/mod.ts'
 
 export const exists = async (filePath: string): Promise <boolean> => {
   try
@@ -26,7 +26,7 @@ export const writeTextFile = async (path: string, data: string) => {
   await Deno.writeTextFile (path, data)
 }
 
-export const writeJSONFile = (path: string, data: any) => writeTextFile (path, JSON.stringify (data, undefined, 2))
+export const writeJSONFile = (path: string, data: Parameters <typeof JSON.stringify>[0]) => writeTextFile (path, JSON.stringify (data, undefined, 2))
 
 export const fetchJSON = (url: string | URL) => fetch (url).then ((response) => response.json ())
 
