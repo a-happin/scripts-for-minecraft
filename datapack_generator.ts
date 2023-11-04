@@ -44,6 +44,10 @@ abstract class ResourceGenerator
     this.children.push (it)
     if (category === 'function')
     {
+      if (this.category === 'tag/function')
+      {
+        (it as MCFunctionGenerator).doc `@handles #${this.location}`
+      }
       (it as MCFunctionGenerator).doc `@within ${this.category} ${this.location}`
     }
     return it
