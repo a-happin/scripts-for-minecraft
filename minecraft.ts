@@ -735,7 +735,7 @@ export type ItemModifier = (({
     duration: NumberProvider
   }[]
 }) & {
-  conditions: Predicate[]
+  conditions?: Predicate[]
 })
 //#endregion
 
