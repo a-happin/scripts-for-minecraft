@@ -6,6 +6,11 @@ abstract class ResourceGenerator
   public readonly location: Minecraft.ResourceLocation
   public readonly children: ResourceGenerator[] = []
 
+  private inline_cnt = 0
+  // アロー関数で定義することでthisを束縛する
+  // (method定義だとthisは呼び出し元になる)
+  private new_inline_location = () => `${this.location}${this.location.path === '' || this.location.path.endsWith ('/') ? '' : '/'}__inline__/${this.inline_cnt ++}`
+
   constructor (
     location: Minecraft.ResourceLocation | string,
   )
@@ -38,9 +43,14 @@ abstract class ResourceGenerator
     return this.location.toFullString ()
   }
 
-  public define_inline_resource <C extends Minecraft.ResourceCategory> (category: C, location: Minecraft.ResourceLocation | string): InstanceType <typeof ResourceGenerators[C]>
+  public define_inline_resource <C extends Minecraft.ResourceCategory> (category: C, location?: Minecraft.ResourceLocation | string): InstanceType <typeof ResourceGenerators[C]>
   {
-    const it = new ResourceGenerators[category] (location) as InstanceType <typeof ResourceGenerators[C]>
+    const it = new ResourceGenerators[category] (location ?? this.new_inline_location ()) as InstanceType <typeof ResourceGenerators[C]>
+    if (location == null)
+    {
+      // 関数を上書きする。アロー関数なのでthisが書き換わらない。
+      it.new_inline_location = this.new_inline_location
+    }
     this.children.push (it)
     if (category === 'function')
     {
@@ -243,6 +253,31 @@ const ResourceGenerators = {
   'lang': LangGenerator,
   'pack.mcmeta': PackMCMetaGenerator,
 } as const
+
+type DefineResource = <C extends Minecraft.ResourceCategory> (category: C, location: string, also: (THIS: InstanceType <typeof ResourceGenerators[C]>) => void) => void
+
+export const generate_pack_f = async (path_of_pack: string, f: (define: DefineResource) => void) => {
+  const tasks: {[k in string]: () => Promise <void>} = {}
+
+  f (<C extends Minecraft.ResourceCategory> (category: C, location: string, also: (THIS: InstanceType <typeof ResourceGenerators[C]>) => void): void => {
+    const generator = new ResourceGenerators[category] (location)
+    // deno-lint-ignore no-explicit-any
+    also (generator as any)
+    for (const [category, location, res] of generator.generate_resources ())
+    {
+      if (tasks[`${category} ${location}`] === undefined)
+      {
+        tasks[`${category} ${location}`] = () => Minecraft.writeResource (path_of_pack, category, location, res)
+      }
+      else
+      {
+        throw new Error (`Duplicate Resource Definition:\n ${category} ${location} is already exists.`)
+      }
+    }
+  })
+
+  await Promise.all (Object.values (tasks).map ((task) => task ()))
+}
 
 export type Pack = {
   'pack.mcmeta'?: Minecraft.ResourceType <'pack.mcmeta'>
