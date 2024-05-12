@@ -1,6 +1,6 @@
 import * as Minecraft from './minecraft.ts'
 
-abstract class ResourceGenerator
+export abstract class ResourceGenerator
 {
   public abstract readonly category: Minecraft.ResourceCategory
   public readonly location: Minecraft.ResourceLocation
@@ -75,7 +75,7 @@ abstract class ResourceGenerator
   }
 }
 
-class MCFunctionGenerator extends ResourceGenerator {
+export class MCFunctionGenerator extends ResourceGenerator {
   override readonly category = 'function'
   private readonly IMP_DOC: string[] = [`#> ${this}`]
   private readonly body: string[] = []
