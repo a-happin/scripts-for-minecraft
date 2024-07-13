@@ -80,7 +80,7 @@ export const ResourceCategory = {
   },
   "advancement": {
     pack_type: 'data',
-    folder: "advancement",
+    folder: "advancements",
     suffix: ".json",
     declval: (): Advancement => { throw new Error ('unreachable') },
     get default_value (): Advancement {
@@ -117,7 +117,7 @@ export const ResourceCategory = {
   },
   "function": {
     pack_type: 'data',
-    folder: "function",
+    folder: "functions",
     suffix: ".mcfunction",
     declval: (): string => { throw new Error ('unreachable') },
     get default_value (): string {
@@ -126,7 +126,7 @@ export const ResourceCategory = {
   },
   "item_modifier": {
     pack_type: 'data',
-    folder: "item_modifier",
+    folder: "item_modifiers",
     suffix: ".json",
     declval: (): ItemModifier | ItemModifier[] => { throw new Error ('unreachable') },
     get default_value (): ItemModifier | ItemModifier[] {
@@ -135,7 +135,7 @@ export const ResourceCategory = {
   },
   "loot_table": {
     pack_type: 'data',
-    folder: "loot_table",
+    folder: "loot_tables",
     suffix: ".json",
     declval: (): LootTable => { throw new Error ('unreachable') },
     get default_value (): LootTable {
@@ -144,7 +144,7 @@ export const ResourceCategory = {
   },
   "predicate": {
     pack_type: 'data',
-    folder: "predicate",
+    folder: "predicates",
     suffix: ".json",
     declval: (): Predicate | Predicate[] => { throw new Error ('unreachable') },
     get default_value (): Predicate | Predicate[] {
@@ -153,7 +153,7 @@ export const ResourceCategory = {
   },
   "recipe": {
     pack_type: 'data',
-    folder: "recipe",
+    folder: "recipes",
     suffix: ".json",
     declval: (): Recipe => { throw new Error ('unreachable') },
     get default_value (): Recipe {
@@ -164,7 +164,7 @@ export const ResourceCategory = {
   },
   "structure": {
     pack_type: 'data',
-    folder: "structure",
+    folder: "structures",
     suffix: ".nbt",
     declval: (): Uint8Array => { throw new Error ('unreachable') },
     get default_value (): Uint8Array {
@@ -173,7 +173,7 @@ export const ResourceCategory = {
   },
   "tag/block": {
     pack_type: 'data',
-    folder: "tags/block",
+    folder: "tags/blocks",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -195,7 +195,7 @@ export const ResourceCategory = {
   },
   "tag/entity_type": {
     pack_type: 'data',
-    folder: "tags/entity_type",
+    folder: "tags/entity_types",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -206,7 +206,7 @@ export const ResourceCategory = {
   },
   "tag/fluid": {
     pack_type: 'data',
-    folder: "tags/fluid",
+    folder: "tags/fluids",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -217,7 +217,7 @@ export const ResourceCategory = {
   },
   "tag/function": {
     pack_type: 'data',
-    folder: "tags/function",
+    folder: "tags/functions",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -228,7 +228,7 @@ export const ResourceCategory = {
   },
   "tag/game_event": {
     pack_type: 'data',
-    folder: "tags/game_event",
+    folder: "tags/game_events",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -239,7 +239,7 @@ export const ResourceCategory = {
   },
   "tag/item": {
     pack_type: 'data',
-    folder: "tags/item",
+    folder: "tags/items",
     suffix: ".json",
     declval: (): Tag => { throw new Error ('unreachable') },
     get default_value (): Tag {
@@ -393,10 +393,7 @@ export type DamageType = {
 
 //#region Predicate
 export type ItemPredicate = {
-  items?: string[]
   count?: Ranged <number>
-  components?: any
-  predicates?: any
   durability?: Ranged <number>
   enchantments?: {
     enchantment: string
@@ -406,6 +403,7 @@ export type ItemPredicate = {
     enchantment: string
     levels: Ranged <number>
   }[]
+  items?: string[]
   nbt?: string
   potion?: string
   tag?: string
@@ -822,11 +820,6 @@ export type Advancement = {
         location?: Predicate[]
       }
     } | {
-      trigger: `${'minecraft:' | ''}any_block_use`
-      conditions?: {
-        location?: Predicate[]
-      }
-    } | {
       trigger: `${'minecraft:' | ''}avoid_vibration`
     } | {
       trigger: `${'minecraft:' | ''}bee_nest_destroyed`
@@ -869,21 +862,10 @@ export type Advancement = {
         item?: ItemPredicate
       }
     } | {
-      trigger: `${'minecraft:' | ''}crafter_recipe_crafted`
-      conditions: {
-        recipe_id: string
-        ingredients?: ItemPredicate[]
-      }
-    } | {
       trigger: `${'minecraft:' | ''}cured_zombie_villager`
       conditions?: {
         villager?: EntityPredicate | Predicate[]
         zombie?: EntityPredicate | Predicate[]
-      }
-    } | {
-      trigger: `${'minecraft:' | ''}default_use_block`
-      conditions?: {
-        location?: Predicate[]
       }
     } | {
       trigger: `${'minecraft:' | ''}effects_changed`
@@ -915,13 +897,6 @@ export type Advancement = {
       conditions?: {
         entity?: EntityPredicate | Predicate[]
         killing_blow?: DamageTypePredicate
-      }
-    } | {
-      trigger: `${'minecraft:' | ''}fall_after_explosion`
-      conditions?: {
-        start_position?: LocationPredicate
-        distance?: DistancePredicate
-        source?: EntityPredicate | Predicate[]
       }
     } | {
       trigger: `${'minecraft:' | ''}fall_from_height`
@@ -1026,12 +1001,6 @@ export type Advancement = {
       conditions?: {
         entity?: EntityPredicate | Predicate[]
         killing_blow?: DamageTypePredicate
-      }
-    } | {
-      trigger: `${'minecraft:' | ''}recipe_crafted`
-      conditions: {
-        recipe_id: string
-        ingredients?: ItemPredicate[]
       }
     } | {
       trigger: `${'minecraft:' | ''}recipe_unlocked`
