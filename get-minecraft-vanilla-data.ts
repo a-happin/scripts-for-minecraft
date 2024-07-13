@@ -125,7 +125,14 @@ for (const target_version of get_target_versions ())
           //console.log (`Downloading ${path} from ${url} ...`)
           if (key.endsWith ('.json'))
           {
-            await fetchJSON (url).then ((data) => writeJSONFile (path, data))
+            try {
+              await fetchJSON (url).then ((data) => writeJSONFile (path, data))
+            }
+            catch (e)
+            {
+              console.error (`Error! ${url}: ${path}, ${e}`)
+              await download (url, path)
+            }
           }
           else
           {
