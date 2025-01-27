@@ -305,7 +305,7 @@ export class ResourceLocation
   {
     if (parts.length < 2 || ! parts.every ((x) => /^[-.0-9_a-z]*$/.test (x)))
     {
-      throw new Error (`ResourceLocation Error» [${parts.join (', ')}] is invalid path components`)
+      throw new Error (`ResourceLocation Error» ${JSON.stringify (parts)} is invalid path components`)
     }
     return new ResourceLocation (parts[0] || ResourceLocation.DEFAULT_NAMESPACE, parts.slice (1).join ('/'))
   }
