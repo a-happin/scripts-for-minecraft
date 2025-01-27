@@ -266,28 +266,52 @@ export type AssetsResourceCategory = {[k in ResourceCategory]: typeof ResourceCa
 
 export class ResourceLocation
 {
-  constructor (
+  private static readonly DEFAULT_NAMESPACE = 'minecraft'
+
+  private constructor (
     public readonly namespace: string,
     public readonly path: string
   )
+  {}
+
+  static fromNamespaceAndPath (namespace: string, path: string)
   {
     if (! (/^[-.0-9_a-z]+$/.test (namespace) && /^[-./0-9_a-z]*$/.test (path)))
     {
-      throw new Error (`'${this.toFullString ()}' is not a valid ResourceLocation`)
+      throw new Error (`ResourceLocation Error» ${namespace}:${path} is not a valid ResourceLocation`)
     }
+    return new ResourceLocation (namespace, path)
   }
 
   static fromString (str: string)
   {
-    if (str.includes (':'))
+    const colon = str.indexOf (':')
+    if (colon !== -1)
     {
-      const [namespace, path] = str.split (':')
-      return new ResourceLocation (namespace || 'minecraft', path)
+      const colon_len = 1
+
+      const namespace = str.slice (0, colon) || ResourceLocation.DEFAULT_NAMESPACE
+      const path = str.slice (colon + colon_len)
+
+      return ResourceLocation.fromNamespaceAndPath (namespace, path)
     }
     else
     {
-      return new ResourceLocation ('minecraft', str)
+      return ResourceLocation.fromNamespaceAndPath (ResourceLocation.DEFAULT_NAMESPACE, str)
     }
+  }
+
+  static fromPathComponents (parts: readonly string[])
+  {
+    if (parts.length === 0)
+    {
+      throw new Error (`ResourceLocation Error» [] is invalid path components`)
+    }
+    if (! parts.every ((x) => /^[-.0-9_a-z]*$/.test (x)))
+    {
+      throw new Error (`ResourceLocation Error» ${JSON.stringify (parts)} is invalid path components`)
+    }
+    return new ResourceLocation (parts[0] || ResourceLocation.DEFAULT_NAMESPACE, parts.slice (1).join ('/'))
   }
 
   toFullString ()
@@ -297,7 +321,7 @@ export class ResourceLocation
 
   toString ()
   {
-    return this.namespace === 'minecraft' ? (this.path || ':') : this.toFullString ()
+    return this.namespace === ResourceLocation.DEFAULT_NAMESPACE ? (this.path || ':') : this.toFullString ()
   }
 }
 
@@ -1335,16 +1359,16 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
   }
   if (! (location.path === '' || location.path.endsWith ('/')))
   {
-    location = new ResourceLocation (location.namespace, `${location.path}/`)
+    location = ResourceLocation.fromNamespaceAndPath (location.namespace, `${location.path}/`)
   }
   const dir = stdpath.dirname (path_of_resource (path_of_datapack, category, location))
-  const root = stdpath.dirname (path_of_resource (path_of_datapack, category, new ResourceLocation (location.namespace, '')))
+  const root = stdpath.dirname (path_of_resource (path_of_datapack, category, ResourceLocation.fromNamespaceAndPath (location.namespace, '')))
   for await (const path of enumurate_files (dir))
   {
     if (path.endsWith (ResourceCategory[category].suffix))
     {
       const relative = stdpath.relative (root, path)
-      const entryLocation = new ResourceLocation (location.namespace, relative.slice (0, - ResourceCategory[category].suffix.length))
+      const entryLocation = ResourceLocation.fromNamespaceAndPath (location.namespace, relative.slice (0, - ResourceCategory[category].suffix.length))
       yield {path, location: entryLocation, data: await readResource (path_of_datapack, category, entryLocation)}
     }
   }
