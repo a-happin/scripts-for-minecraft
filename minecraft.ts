@@ -303,7 +303,7 @@ export class ResourceLocation
 
   static fromPathComponents (parts: readonly string[])
   {
-    if (parts.length === 0)
+    if (parts.length < 2)
     {
       throw new Error (`ResourceLocation Error» [] is invalid path components`)
     }
