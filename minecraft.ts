@@ -285,6 +285,10 @@ export class ResourceLocation
 
   static fromString (str: string)
   {
+    if (str == '')
+    {
+      throw new Error (`ResourceLocation Error» '' is not a valid ResourceLocation`)
+    }
     const colon = str.indexOf (':')
     if (colon !== -1)
     {
