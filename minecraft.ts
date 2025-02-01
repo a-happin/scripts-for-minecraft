@@ -715,6 +715,9 @@ export type ItemModifier = (({
     append: boolean
   }[]
 } | {
+  function: `${'minecraft:' | ''}set_components`
+  components: {[k in string]: string}
+} | {
   function: `${'minecraft:' | ''}set_contents`
   entries: LootTableEntryProvider[]
   type: string
