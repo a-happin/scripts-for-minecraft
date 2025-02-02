@@ -716,7 +716,7 @@ export type ItemModifier = (({
   }[]
 } | {
   function: `${'minecraft:' | ''}set_components`
-  components: {[k in string]: string}
+  components: {[k in string]: any}
 } | {
   function: `${'minecraft:' | ''}set_contents`
   entries: LootTableEntryProvider[]
