@@ -71,8 +71,8 @@ export const fetch_version_manifest = (): Promise <VersionManifest> => fetch ('h
 
 export const ResourceCategory = {
   "pack.mcmeta": {
-    pack_type: '',
-    folder: ".",
+    pack_type: '.',
+    folder: "..",
     suffix: ".json",
     get default_value (): PackMCMeta {
       throw new Error ('not implemented')
@@ -112,7 +112,7 @@ export const ResourceCategory = {
     suffix: ".json",
     declval: (): DimensionType => { throw new Error ('unreachable') },
     get default_value (): DimensionType {
-      return new Error ('not implemented')
+      throw new Error ('not implemented')
     },
   },
   "function": {
@@ -325,16 +325,21 @@ export class ResourceLocation
   }
 }
 
-export const path_of_resource = (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string) => {
+export const path_of_resource = (category: ResourceCategory, location: ResourceLocation | string | string[]) => {
   if (category === 'pack.mcmeta')
   {
-    return `${path_of_pack}/pack.mcmeta`
+    return 'pack.mcmeta'
   }
+
   if (typeof location === 'string')
   {
     location = ResourceLocation.fromString (location)
   }
-  return `${path_of_pack}/${ResourceCategory[category].pack_type}/${location.namespace}/${ResourceCategory[category].folder}/${location.path}${ResourceCategory[category].suffix}`
+  else if (location instanceof Array)
+  {
+    location = ResourceLocation.fromPathComponents (location)
+  }
+  return `${ResourceCategory[category].pack_type}/${location.namespace}/${ResourceCategory[category].folder}/${location.path}${ResourceCategory[category].suffix}`
 }
 
 type RequireOne <T, K extends keyof T = keyof T> = K extends keyof T ? {[k in K]-?: Exclude <T[k], undefined>} & T : never
@@ -406,7 +411,7 @@ export type PackMCMeta = {
   }
 }
 
-export type DimensionType = object
+export type DimensionType = Record <string, unknown>
 
 export type DamageType = {
   exhaustion: number
@@ -1323,7 +1328,7 @@ export const readResource: {
   <T extends ResourceCategory> (path_of_datapack: string, category: T, location: ResourceLocation | string): Promise <ResourceType <T>>
 } = async (path_of_datapack: string, category: ResourceCategory, location: ResourceLocation | string) =>
 {
-  const path = path_of_resource (path_of_datapack, category, location)
+  const path = `${path_of_datapack}/${path_of_resource (category, location)}`
   if (ResourceCategory[category].suffix === '.mcfunction')
   {
     return await Deno.readTextFile (path)
@@ -1364,8 +1369,8 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
   {
     location = ResourceLocation.fromNamespaceAndPath (location.namespace, `${location.path}/`)
   }
-  const dir = stdpath.dirname (path_of_resource (path_of_datapack, category, location))
-  const root = stdpath.dirname (path_of_resource (path_of_datapack, category, ResourceLocation.fromNamespaceAndPath (location.namespace, '')))
+  const dir = stdpath.dirname (`${path_of_datapack}/${path_of_resource (category, location)}`)
+  const root = stdpath.dirname (`${path_of_datapack}/${path_of_resource (category, ResourceLocation.fromNamespaceAndPath (location.namespace, ''))}`)
   for await (const path of enumurate_files (dir))
   {
     if (path.endsWith (ResourceCategory[category].suffix))
@@ -1383,7 +1388,7 @@ export const writeResource: {
   <T extends ResourceCategory> (path_of_pack: string, category: T, location: ResourceLocation | string, data: ResourceType <T>): Promise <void>
 } = async (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string, data: any) =>
 {
-  const path = path_of_resource (path_of_pack, category, location)
+  const path = `${path_of_pack}/${path_of_resource (category, location)}`
   if (ResourceCategory[category].suffix === '.mcfunction')
   {
     await Deno.mkdir (stdpath.dirname (path), {recursive: true})
@@ -1403,7 +1408,7 @@ export const writeResource: {
 
 export const removeResource = async (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string) =>
 {
-  const path = path_of_resource (path_of_pack, category, location)
+  const path = `${path_of_pack}/${path_of_resource (category, location)}`
   await Deno.remove (path)
 }
 
