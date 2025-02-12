@@ -276,11 +276,11 @@ export class ResourceLocation
 
   static fromNamespaceAndPath (namespace: string, path: string)
   {
-    if (! (/^[-.0-9_a-z]+$/.test (namespace) && /^[-./0-9_a-z]*$/.test (path)))
+    if (! (/^[-.0-9_a-z]*$/.test (namespace) && /^[-./0-9_a-z]*$/.test (path)))
     {
       throw new Error (`ResourceLocation Error» ${namespace}:${path} is not a valid ResourceLocation`)
     }
-    return new ResourceLocation (namespace, path)
+    return new ResourceLocation (namespace || ResourceLocation.DEFAULT_NAMESPACE, path)
   }
 
   static fromString (str: string)
