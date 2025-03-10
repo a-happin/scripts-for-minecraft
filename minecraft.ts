@@ -73,7 +73,7 @@ export const ResourceCategory = {
   "pack.mcmeta": {
     pack_type: '.',
     folder: "..",
-    suffix: ".json",
+    suffix: ".json", // 横着。これで問題になるのはpath_of_resourceかな
     get default_value (): PackMCMeta {
       throw new Error ('not implemented')
     },
@@ -285,10 +285,7 @@ export class ResourceLocation
 
   static fromString (str: string)
   {
-    if (str == '')
-    {
-      throw new Error (`ResourceLocation Error» '' is not a valid ResourceLocation`)
-    }
+    // wikiによると空文字列でもいいらしい (':'と同じ)
     const colon = str.indexOf (':')
     if (colon !== -1)
     {
