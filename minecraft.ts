@@ -1381,6 +1381,23 @@ export async function * readResources <T extends ResourceCategory> (path_of_data
 
 const append_ln_if_missing = (text: string) => text.endsWith ('\n') ? text : `${text}\n`
 
+const array_equals = (a: Uint8Array, b: Uint8Array) => {
+  if (a.length !== b.length)
+  {
+    return false
+  }
+
+  for (let i = 0; i < a.length; ++ i)
+  {
+    if (! (a[i] === b[i]))
+    {
+      return false
+    }
+  }
+
+  return true
+}
+
 export const writeResource: {
   <T extends ResourceCategory> (path_of_pack: string, category: T, location: ResourceLocation | string, data: ResourceType <T>): Promise <void>
 } = async (path_of_pack: string, category: ResourceCategory, location: ResourceLocation | string, data: any) =>
@@ -1388,18 +1405,49 @@ export const writeResource: {
   const path = `${path_of_pack}/${path_of_resource (category, location)}`
   if (ResourceCategory[category].suffix === '.mcfunction')
   {
-    await Deno.mkdir (stdpath.dirname (path), {recursive: true})
-    await Deno.writeTextFile (path, append_ln_if_missing (data))
+    const old_content = await Deno.readTextFile (path).catch ((e) => { if (e instanceof Deno.errors.NotFound) return undefined; throw e } )
+    const new_content = append_ln_if_missing (data)
+    if (old_content != null && old_content === new_content)
+    {
+      console.log (`${location} has the same content. skipped.`)
+    }
+    else
+    {
+      await Deno.mkdir (stdpath.dirname (path), {recursive: true})
+      await Deno.writeTextFile (path, new_content)
+    }
   }
   else if (ResourceCategory[category].suffix === '.json')
   {
-    await Deno.mkdir (stdpath.dirname (path), {recursive: true})
-    await Deno.writeTextFile (path, append_ln_if_missing (JSON.stringify (data, undefined, 2)))
+    const old_content = await Deno.readTextFile (path).catch ((e) => { if (e instanceof Deno.errors.NotFound) return undefined; throw e } )
+    const new_content = append_ln_if_missing (JSON.stringify (data, undefined, 2))
+    if (old_content != null && old_content === new_content)
+    {
+      console.log (`${location} has the same content. skipped.`)
+    }
+    else
+    {
+      await Deno.mkdir (stdpath.dirname (path), {recursive: true})
+      await Deno.writeTextFile (path, new_content)
+    }
   }
   else if (ResourceCategory[category].suffix === '.nbt')
   {
-    await Deno.mkdir (stdpath.dirname (path), {recursive: true})
-    await Deno.writeFile (path, data)
+    const old_content = await Deno.readFile (path).catch ((e) => { if (e instanceof Deno.errors.NotFound) return undefined; throw e } )
+    const new_content = data
+    if (old_content != null && array_equals (old_content, new_content))
+    {
+      console.log (`${location} has the same content. skipped.`)
+    }
+    else
+    {
+      await Deno.mkdir (stdpath.dirname (path), {recursive: true})
+      await Deno.writeFile (path, new_content)
+    }
+  }
+  else
+  {
+    throw new Error ('unreachable')
   }
 }
 
