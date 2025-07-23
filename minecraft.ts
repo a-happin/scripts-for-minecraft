@@ -304,7 +304,7 @@ export class ResourceLocation
 
   static fromPathComponents (parts: readonly string[])
   {
-    if (parts.length < 2 || ! parts.every ((x) => /^[-.0-9_a-z]*$/.test (x)))
+    if (! parts.every ((x) => /^[-.0-9_a-z]*$/.test (x)))
     {
       throw new Error (`ResourceLocation Error» ${JSON.stringify (parts)} is invalid path components`)
     }
